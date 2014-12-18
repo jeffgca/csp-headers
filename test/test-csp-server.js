@@ -8,7 +8,7 @@ it('tests generating a csp', function() {
     policy: "img-src 'self' *.cdn-domain.com; default-src 'self' *.mydomain.com"
   }
   var testCsp = {
-    policies: {
+    directives: {
       'img-src': [ 'self', '*.cdn-domain.com' ],
       'default-src': [ 'self', '*.mydomain.com' ]
     },
@@ -30,14 +30,14 @@ it('tests generating csp policy samples', function() {
     "default-src 'self' *.mailsite.com; img-src *"
   ];
 
-  assert.equal(csp.compile({policies: {'default-src': 'self'}}).policy, intended[0]);
+  assert.equal(csp.compile({directives: {'default-src': 'self'}}).policy, intended[0]);
 
   assert.equal(csp.compile({
-    policies: {'default-src': ['self', '*.mydomain.com']}
+    directives: {'default-src': ['self', '*.mydomain.com']}
   }).policy, intended[1]);
 
   assert.equal(csp.compile({
-    policies: {
+    directives: {
       'default-src':  'self',
       'img-src':      '*',
       'media-src':    ['media1.com', 'media2.com'],
@@ -45,9 +45,9 @@ it('tests generating csp policy samples', function() {
     }
   }).policy, intended[2]);
 
-  assert.equal(csp.compile({policies: {'default-src': 'https://onlinebanking.jumbobank.com'}}).policy, intended[3]);
+  assert.equal(csp.compile({directives: {'default-src': 'https://onlinebanking.jumbobank.com'}}).policy, intended[3]);
 
-  assert.equal(csp.compile({policies: {
+  assert.equal(csp.compile({directives: {
     'default-src': ['self', '*.mailsite.com'],
     'img-src':     '*'
   }}).policy, intended[4]);
@@ -55,7 +55,7 @@ it('tests generating csp policy samples', function() {
 });
 
 it('tests debug mode', function() {
-  assert.equal(csp.compile({debug: true, policies: {'img-src': '*'}}).headerName, 'Content-Security-Policy-Report-Only');
-  assert.equal(csp.compile({debug: false, policies: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
-  assert.equal(csp.compile({policies: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
+  assert.equal(csp.compile({debug: true, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy-Report-Only');
+  assert.equal(csp.compile({debug: false, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
+  assert.equal(csp.compile({directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
 })

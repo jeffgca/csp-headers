@@ -42,7 +42,7 @@ function compile(options) {
     headerName = "Content-Security-Policy";
   }
 
-  var policy = _.map(options.policies, function(v, k) {
+  var policy = _.map(options.directives, function(v, k) {
     // value can be string or array
     if (_.isArray(v)) {
       v = _.map(v, function(value) {
@@ -67,7 +67,7 @@ function compile(options) {
 }
 
 function createCSP(options) {
-  var policy = compile(options.policies);
+  var policy = compile(options.directives);
   return function(req, res, next) {
     res.setHeader(policy);
   }
