@@ -67,9 +67,10 @@ function compile(options) {
 }
 
 function createCSP(options) {
-  var policy = compile(options.directives);
+  var policy = compile(options);
   return function(req, res, next) {
-    res.setHeader(policy);
+    res.setHeader(policy.headerName, policy.policy);
+    next();
   }
 }
 
