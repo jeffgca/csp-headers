@@ -1,5 +1,5 @@
 {
-  "name": "csp-dev-server",
+  "name": "csp-headers",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
@@ -13,6 +13,8 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
-    "mocha": "^2.0.1"
+    "connect": "^3.3.3",
+    "mocha": "^2.0.1",
+    "request": "^2.51.0"
   }
 }
