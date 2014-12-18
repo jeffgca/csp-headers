@@ -1,5 +1,8 @@
 var assert = require('assert');
 var csp = require('../index');
+var connect = require('connect');
+var request = require('request');
+var http = require('http');
 
 it('tests generating a csp', function() {
   // should return: 
@@ -58,4 +61,26 @@ it('tests debug mode', function() {
   assert.equal(csp.compile({debug: true, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy-Report-Only');
   assert.equal(csp.compile({debug: false, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
   assert.equal(csp.compile({directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
-})
+});
+
+it ('tests adding a csp policy to a connect app', function(done) {
+
+  var app = connect();
+
+  var _config = {directives: {
+    'default-src': 'self',
+    'img-src':     '*'
+  }};
+
+  app.use(csp.createCSP(_config))
+
+  var server = http.createServer(app);
+  server.listen(3001, function() {
+    request.get('http://localhost:3001/')
+      .on('response', function(response) {
+        assert.equal(response.headers['content-security-policy'], "default-src 'self'; img-src *");
+        server.close();
+        done();
+      });
+  });
+});
