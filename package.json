@@ -11,7 +11,7 @@
     "url": "https://github.com/canuckistani/csp-headers/issues"
   },
   "homepage": "https://github.com/canuckistani/csp-headers",
-  "keywords": [ "csp", "connect", "security", "owasp" ]
+  "keywords": [ "csp", "connect", "security", "owasp" ],
   "scripts": {
     "test": "mocha"
   },
