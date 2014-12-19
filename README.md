@@ -39,4 +39,4 @@ Check your headers:
 
 Firefox's Web Console includes a category for security messages can be somewhat helpful for debugging your csp policy:
 
-![](http://note.io/1x3GeH3)
+![](./screenshot.png)
