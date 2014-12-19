@@ -1,8 +1,17 @@
 {
   "name": "csp-headers",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.2",
+  "description": "Connect middleware for adding csp policies to your site.",
   "main": "index.js",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/canuckistani/csp-headers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/canuckistani/csp-headers/issues"
+  },
+  "homepage": "https://github.com/canuckistani/csp-headers",
+  "keywords": [ "csp", "connect", "security", "owasp" ]
   "scripts": {
     "test": "mocha"
   },
