@@ -1,4 +1,4 @@
-# CSP-headers
+# CSP-headers [![Build Status](https://travis-ci.org/canuckistani/csp-headers.png)](https://travis-ci.org/canuckistani/csp-headers)
 
 Connect middleware that allows you to define a csp policy as a JS object.
 
