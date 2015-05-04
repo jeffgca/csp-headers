@@ -4,78 +4,92 @@ var connect = require('connect');
 var request = require('request');
 var http = require('http');
 
-it('tests generating a csp', function() {
-  // should return: 
-  var intended =  {
-    headerName: "Content-Security-Policy-Report-Only",
-    policy: "img-src 'self' *.cdn-domain.com; default-src 'self' *.mydomain.com"
-  }
-  var testCsp = {
-    directives: {
-      'img-src': [ 'self', '*.cdn-domain.com' ],
-      'default-src': [ 'self', '*.mydomain.com' ]
-    },
-    debug: true
-  };
+describe('test csp-headers module', function() {
 
-  var _csp = csp.compile(testCsp);
-
-  assert.equal(intended.headerName, _csp.headerName);
-  assert.equal(intended.policy, _csp.policy);
-});
-
-it('tests generating csp policy samples', function() {
-  var intended = [
-    "default-src 'self'",
-    "default-src 'self' *.mydomain.com",
-    "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com",
-    "default-src https://onlinebanking.jumbobank.com",
-    "default-src 'self' *.mailsite.com; img-src *"
-  ];
-
-  assert.equal(csp.compile({directives: {'default-src': 'self'}}).policy, intended[0]);
-
-  assert.equal(csp.compile({
-    directives: {'default-src': ['self', '*.mydomain.com']}
-  }).policy, intended[1]);
-
-  assert.equal(csp.compile({
-    directives: {
-      'default-src':  'self',
-      'img-src':      '*',
-      'media-src':    ['media1.com', 'media2.com'],
-      'script-src':   'userscripts.example.com',
+  it('tests generating a csp', function() {
+    // should return: 
+    var intended =  {
+      headerName: "Content-Security-Policy-Report-Only",
+      policy: "img-src 'self' *.cdn-domain.com; default-src 'self' *.mydomain.com"
     }
-  }).policy, intended[2]);
+    var testCsp = {
+      directives: {
+        'img-src': [ 'self', '*.cdn-domain.com' ],
+        'default-src': [ 'self', '*.mydomain.com' ]
+      },
+      debug: true
+    };
 
-  assert.equal(csp.compile({directives: {'default-src': 'https://onlinebanking.jumbobank.com'}}).policy, intended[3]);
+    var _csp = csp.compile(testCsp);
 
-  assert.equal(csp.compile({directives: {
-    'default-src': ['self', '*.mailsite.com'],
-    'img-src':     '*'
-  }}).policy, intended[4]);
+    assert.equal(intended.headerName, _csp.headerName);
+    assert.equal(intended.policy, _csp.policy);
+  });
 
+  it('tests generating csp policy samples', function() {
+    var intended = [
+      "default-src 'self'",
+      "default-src 'self' *.mydomain.com",
+      "default-src 'self'; img-src *; media-src media1.com media2.com; script-src userscripts.example.com",
+      "default-src https://onlinebanking.jumbobank.com",
+      "default-src 'self' *.mailsite.com; img-src *"
+    ];
+
+    assert.equal(csp.compile({directives: {'default-src': 'self'}}).policy, intended[0]);
+
+    assert.equal(csp.compile({
+      directives: {'default-src': ['self', '*.mydomain.com']}
+    }).policy, intended[1]);
+
+    assert.equal(csp.compile({
+      directives: {
+        'default-src':  'self',
+        'img-src':      '*',
+        'media-src':    ['media1.com', 'media2.com'],
+        'script-src':   'userscripts.example.com',
+      }
+    }).policy, intended[2]);
+
+    assert.equal(csp.compile({directives: {'default-src': 'https://onlinebanking.jumbobank.com'}}).policy, intended[3]);
+
+    assert.equal(csp.compile({directives: {
+      'default-src': ['self', '*.mailsite.com'],
+      'img-src':     '*'
+    }}).policy, intended[4]);
+
+  });
+
+  it('tests debug mode', function() {
+    assert.equal(csp.compile({debug: true, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy-Report-Only');
+    assert.equal(csp.compile({debug: false, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
+    assert.equal(csp.compile({directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
+  });
 });
 
-it('tests debug mode', function() {
-  assert.equal(csp.compile({debug: true, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy-Report-Only');
-  assert.equal(csp.compile({debug: false, directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
-  assert.equal(csp.compile({directives: {'img-src': '*'}}).headerName, 'Content-Security-Policy');
-});
 
-it ('tests adding a csp policy to a connect app', function(done) {
 
-  var app = connect();
+describe('tests a live server', function() {
 
-  var _config = {directives: {
-    'default-src': 'self',
-    'img-src':     '*'
-  }};
+  var port = process.env.PORT || 3001;
+  var server;
 
-  app.use(csp.createCSP(_config))
+  before(function(done) {
 
-  var server = http.createServer(app);
-  server.listen(3001, function() {
+    var app = connect();
+    var _config = {directives: {
+      'default-src': 'self',
+      'img-src':     '*'
+    }};
+
+    app.use(csp.createCSP(_config))
+
+    server = http.createServer(app);
+    server.listen(port, function() {
+      done();
+    });
+  });
+
+  it ('tests adding a csp policy to a connect app', function(done) {
     request.get('http://localhost:3001/')
       .on('response', function(response) {
         assert.equal(response.headers['content-security-policy'], "default-src 'self'; img-src *");
