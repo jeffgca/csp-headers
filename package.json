@@ -1,6 +1,6 @@
 {
   "name": "csp-headers",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Connect middleware for adding csp policies to your site.",
   "main": "index.js",
   "repository" : {
