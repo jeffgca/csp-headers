@@ -1,17 +1,17 @@
 var assert = require('assert');
 var csp = require('../index');
-var connect = require('connect');
 var request = require('request');
-var http = require('http');
+var server = require('./server').server;
 
 describe('test csp-headers module', function() {
 
   it('tests generating a csp', function() {
-    // should return: 
+    // should return:
     var intended =  {
       headerName: "Content-Security-Policy-Report-Only",
       policy: "img-src 'self' *.cdn-domain.com; default-src 'self' *.mydomain.com"
     }
+
     var testCsp = {
       directives: {
         'img-src': [ 'self', '*.cdn-domain.com' ],
@@ -69,21 +69,9 @@ describe('test csp-headers module', function() {
 
 
 describe('tests a live server', function() {
-
   var port = process.env.PORT || 3001;
-  var server;
 
   before(function(done) {
-
-    var app = connect();
-    var _config = {directives: {
-      'default-src': 'self',
-      'img-src':     '*'
-    }};
-
-    app.use(csp.createCSP(_config))
-
-    server = http.createServer(app);
     server.listen(port, function() {
       done();
     });
